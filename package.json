@@ -14,7 +14,8 @@
     "express": "^4.16.4",
     "mongoose": "^6.2.8",
     "morgan": "^1.10.0",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "eslint": "^5.16.0",
