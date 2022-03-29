@@ -7,6 +7,35 @@ const signToken = (id) => {
     });
 };
 
+const createSendToken = (user, statusCode, res) => {
+    const token = signToken(user._id);
+    const cookieOptions = {
+        //Convert to miliseconds
+        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
+        //Cannot be accessed or modified by the browser
+        //Prevents Cross-site scripting attacks
+        httpOnly: true
+    };
+
+    if (process.env.NODE_ENV === "production") {
+        //Will only be sent on HTTPS connections
+        cookieOptions.secure = true;
+    }
+
+    res.cookie("jwt", token, cookieOptions);
+
+    //Dont show user password in response
+    user.password = undefined;
+
+    res.status(statusCode).json({
+        status: "success",
+        token,
+        data: {
+            user
+        }
+    });
+};
+
 exports.signup = async (req, res, next) => {
     try {
         const newUser = await User.create({
@@ -16,15 +45,8 @@ exports.signup = async (req, res, next) => {
             passwordConfirm: req.body.passwordConfirm
         });
 
-        const token = signToken(newUser._id);
+        createSendToken(newUser, 201, res);
 
-        res.status(201).json({
-            status: "success",
-            token,
-            data: {
-                user: newUser
-            }
-        });
     } catch (err) {
         res.status(400).json({
             status: "fail",
