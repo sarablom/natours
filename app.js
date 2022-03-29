@@ -4,6 +4,7 @@ const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const mongoSanitizer = require("express-mongo-sanitize");
 const xss = require("xss-clean");
+const cookieParser = require("cookie-parser");
 
 const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
@@ -33,6 +34,7 @@ app.use("/api", limiter);
 app.use(express.json({
   limit: "10kb"
 }));
+app.use(cookieParser());
 
 //Data sanitization against NoSQL query injection
 //Filters out all the data that is not allowed
